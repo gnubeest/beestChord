@@ -50,7 +50,11 @@ class Beestar(callbacks.Plugin):
         Shows standard tuning guitar chords from <Root_QualityTensionBass>.
         """
 
+        input = input.replace(" ", "")
+        input = input.replace("(", "")
+        input = input.replace(")", "")
         uber = requests.get('https://api.uberchord.com/v1/chords/' + input)
+
         chart = json.loads(uber.text)[0]
         strings = chart["strings"]
         name = chart["chordName"].replace(',', "")
