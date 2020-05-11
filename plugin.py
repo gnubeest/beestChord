@@ -28,8 +28,8 @@
 
 ###
 
+import os
 import json
-import requests
 
 from supybot import utils, plugins, ircutils, callbacks
 from supybot.commands import *
@@ -46,21 +46,20 @@ class Beestar(callbacks.Plugin):
     threaded = True
 
     def chord(self, irc, msg, args, input):
-        """[<Root_QualityTensionBass>]
-        Shows standard tuning guitar chords from <Root_QualityTensionBass>.
+        """[<chordname>]
+        Shows standard tuning guitar chords from <chordname>.
         """
-
-        uber = requests.get('https://api.uberchord.com/v1/chords/' + input)
-        chart = json.loads(uber.text)[0]
-        strings = chart["strings"]
-        name = chart["chordName"].replace(',', "")
-        enharm = chart["enharmonicChordName"]
-        tones = chart["tones"]
-        strings = "\x0303" + strings
-        name = "\x0308" + name
-        tones = "\x0308" + tones
+        
+        chordJSON = open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__))))
+        chordLib=json.load(chordJSON)
+        
+        chart = (chordLib["EADGBE"][input][0]["p"])
+        strings = chart.replace(',', "|")
+        chordName = input
+        strings = "\x0303 🎸 |" + strings + "|"
+        chordName = "\x0308" + chordName
                 
-        output = name + "  " + strings + "  " + tones
+        output = chordName + strings
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
 

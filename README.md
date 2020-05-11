@@ -2,7 +2,7 @@ BEESTAR
 
 a guitar chord finder for Limnoria
 
-requires json & requests
+requires json
 
 is kinda broken
 

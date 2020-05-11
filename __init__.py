@@ -34,8 +34,8 @@ Beestar: guitar chord finder
 
 import sys
 import supybot
+import os
 import json
-import requests
 from supybot import world
 
 # Use this for the version of this plugin.
@@ -63,7 +63,7 @@ reload(plugin)
 # Add more reloads here if you add third-party modules and want them to be
 # reloaded when this plugin is reloaded.  Don't forget to import them as well!
 reload(json)
-reload(requests)
+reload(os)
 
 if world.testing:
     from . import test
