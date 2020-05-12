@@ -64,6 +64,7 @@ reload(plugin)
 # reloaded when this plugin is reloaded.  Don't forget to import them as well!
 reload(json)
 reload(os)
+reload(sys)
 
 if world.testing:
     from . import test

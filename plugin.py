@@ -28,6 +28,7 @@
 
 ###
 
+import sys
 import os
 import json
 
@@ -66,8 +67,11 @@ class Beestar(callbacks.Plugin):
         userChord = userChord.replace('aug', '+')
         userChord = userChord.replace('♭', "b")
         userChord = userChord.replace('♯', '#')
- 
-        chart = (chordLib["EADGBE"][userChord][0]["p"])
+        try:
+            chart = (chordLib["EADGBE"][userChord][0]["p"])
+        except KeyError:
+            irc.reply('Error 48a3e5: Invalid or unsupported chord')
+            sys.exit()
         strings = chart.replace(',', '|')
         chordName = userChord
         strings = "\x0303 🎸 |" + strings + "|"
