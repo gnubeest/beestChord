@@ -56,8 +56,14 @@ class Beestar(callbacks.Plugin):
         userChord = input
         userChord = userChord.replace('minor', 'm')
         userChord = userChord.replace('Minor', 'm')
-        userChord = userChord.replace('maj', 'Maj')
+        userChord = userChord.replace('min', 'm')
+        userChord = userChord.replace('Min', 'm')
+        userChord = userChord.replace('-', 'm')
         userChord = userChord.replace('major', 'Maj')
+        userChord = userChord.replace('Major', 'Maj')
+        userChord = userChord.replace('maj', 'Maj')
+        userChord = userChord.replace('Δ', 'Maj')
+        userChord = userChord.replace('aug', '+')
         userChord = userChord.replace('♭', "b")
         userChord = userChord.replace('♯', '#')
  
