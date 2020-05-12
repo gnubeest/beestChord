@@ -36,13 +36,13 @@ from supybot import utils, plugins, ircutils, callbacks
 from supybot.commands import *
 try:
     from supybot.i18n import PluginInternationalization
-    _ = PluginInternationalization('Beestar')
+    _ = PluginInternationalization('BeestChord')
 except ImportError:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
     _ = lambda x: x
 
-class Beestar(callbacks.Plugin):
+class BeestChord(callbacks.Plugin):
     """guitar chord finder"""
     threaded = True
 
@@ -74,7 +74,7 @@ class Beestar(callbacks.Plugin):
         try:
             chart = (chordLib["EADGBE"][userChord][0]["p"])
         except KeyError:
-            irc.reply('Error 48a3e5: Invalid or unsupported chord')
+            irc.reply('Error 0x3d04:f75c:9b48:a3e5 -- Invalid or unsupported chord')
             sys.exit()
 
         strings = chart.replace(',', '|')
@@ -88,6 +88,6 @@ class Beestar(callbacks.Plugin):
         irc.reply(output)
     chord = wrap(chord, ['text'])
 
-Class = Beestar
+Class = BeestChord
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

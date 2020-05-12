@@ -31,8 +31,8 @@
 from supybot.test import *
 
 
-class BeestarTestCase(PluginTestCase):
-    plugins = ('Beestar',)
+class BeestChordTestCase(PluginTestCase):
+    plugins = ('BeestChord',)
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -31,7 +31,7 @@
 from supybot import conf, registry
 try:
     from supybot.i18n import PluginInternationalization
-    _ = PluginInternationalization('Beestar')
+    _ = PluginInternationalization('BeestChord')
 except:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
@@ -44,12 +44,12 @@ def configure(advanced):
     # user or not.  You should effect your configuration by manipulating the
     # registry as appropriate.
     from supybot.questions import expect, anything, something, yn
-    conf.registerPlugin('Beestar', True)
+    conf.registerPlugin('BeestChord', True)
 
 
-Beestar = conf.registerPlugin('Beestar')
+BeestChord = conf.registerPlugin('BeestChord')
 # This is where your configuration variables (if any) should go.  For example:
-# conf.registerGlobalValue(Beestar, 'someConfigVariableName',
+# conf.registerGlobalValue(BeestChord, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 
 

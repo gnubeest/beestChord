@@ -1,4 +1,4 @@
-###
+##
 # Copyright (c) 2020, Brian McCord
 # All rights reserved.
 #
@@ -29,7 +29,7 @@
 ###
 
 """
-Beestar: guitar chord finder
+BeestChord: guitar chord finder
 """
 
 import sys
