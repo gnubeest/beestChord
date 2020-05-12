@@ -68,7 +68,7 @@ class BeestChord(callbacks.Plugin):
         userChord = userChord.replace('maj9', 'Maj9')
         userChord = userChord.replace('maj13', 'Maj13')
         userChord = userChord.replace('Δ', 'Maj')
-        userChord = userChord.replace('aug', '+')
+        userChord = userChord.replace('Aug', 'aug')
         userChord = userChord.replace('♭', "b")
         userChord = userChord.replace('♯', '#')
         try:
@@ -76,9 +76,16 @@ class BeestChord(callbacks.Plugin):
         except KeyError:
             irc.reply('Error 0x3d04:f75c:9b48:a3e5 -- Invalid or unsupported chord')
             sys.exit()
-
+        
+        for voice in range(1, 4):
+            try:
+                newChart = (chordLib["EADGBE"][userChord][voice]["p"])
+            except IndexError:
+                break
+            chart = chart + "   " + newChart
+        
         strings = chart.replace(',', '|')
-        strings = "\x0303 🎸 |" + strings + "|"
+        strings = "\x0303 🎸   " + strings
         chordName = userChord
         chordName = "\x0308" + chordName                
         output = chordName + strings
