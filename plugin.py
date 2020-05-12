@@ -48,7 +48,7 @@ class BeestChord(callbacks.Plugin):
 
     def chord(self, irc, msg, args, input):
         """[<chordname>]
-        Displays an EADGBE guitar chord from <chordname>. (Slash chords \
+        Displays EADGBE guitar fingerings from <chordname>. (Slash chords \
         and omits are currently unsupported.)
         """
         
@@ -76,19 +76,20 @@ class BeestChord(callbacks.Plugin):
         except KeyError:
             irc.reply('Error 0x3d04:f75c:9b48:a3e5 -- Invalid or unsupported chord')
             sys.exit()
-        
+        chart = chart.replace(',', '|')
+        chart = "\x0303|" + chart + "|"       
+ 
         for voice in range(1, 4):
             try:
                 newChart = (chordLib["EADGBE"][userChord][voice]["p"])
             except IndexError:
                 break
-            chart = chart + "   " + newChart
+            newChart = newChart.replace(',', '|')
+            chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
         
-        strings = chart.replace(',', '|')
-        strings = "\x0303 🎸   " + strings
+        chartList = " 🎸  " + chart
         chordName = userChord
-        chordName = "\x0308" + chordName                
-        output = chordName + strings
+        output = chordName + chartList
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
 
