@@ -57,6 +57,7 @@ class BeestChord(callbacks.Plugin):
        
         userChord = input
         userChord = userChord.replace(' ', '')
+        userChord = userChord.capitalize()
         userChord = userChord.replace('minor', 'm')
         userChord = userChord.replace('Minor', 'm')
         userChord = userChord.replace('min', 'm')
@@ -88,7 +89,7 @@ class BeestChord(callbacks.Plugin):
             chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
         
         chartList = " 🎸  " + chart
-        chordName = userChord
+        chordName = "\x0308" + userChord
         output = chordName + chartList
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
