@@ -54,16 +54,16 @@ class Beestar(callbacks.Plugin):
         chordLib=json.load(chordJSON)
        
         userChord = input
-        userChord = output.replace('minor', 'm')
-        userChord = output.replace('Minor', 'm')
-        userChord = output.replace('maj', 'Maj')
-        userChord = output.replace('major', 'Maj')
-        userChord = output.replace('♭', "b")
-        userChord = output.replace('♯', '#')
+        userChord = userChord.replace('minor', 'm')
+        userChord = userChord.replace('Minor', 'm')
+        userChord = userChord.replace('maj', 'Maj')
+        userChord = userChord.replace('major', 'Maj')
+        userChord = userChord.replace('♭', "b")
+        userChord = userChord.replace('♯', '#')
  
         chart = (chordLib["EADGBE"][userChord][0]["p"])
         strings = chart.replace(',', '|')
-        chordName = input
+        chordName = userChord
         strings = "\x0303 🎸 |" + strings + "|"
         chordName = "\x0308" + chordName
                 
