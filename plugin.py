@@ -48,13 +48,15 @@ class Beestar(callbacks.Plugin):
 
     def chord(self, irc, msg, args, input):
         """[<chordname>]
-        Shows standard tuning guitar chords from <chordname>.
+        Displays an EADGBE guitar chord from <chordname>. (Slash chords \
+        and omits are currently unsupported.)
         """
         
         chordJSON = open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__))))
         chordLib=json.load(chordJSON)
        
         userChord = input
+        userChord = userChord.replace(' ', '')
         userChord = userChord.replace('minor', 'm')
         userChord = userChord.replace('Minor', 'm')
         userChord = userChord.replace('min', 'm')
@@ -63,6 +65,8 @@ class Beestar(callbacks.Plugin):
         userChord = userChord.replace('major', 'Maj')
         userChord = userChord.replace('Major', 'Maj')
         userChord = userChord.replace('maj7', 'Maj7')
+        userChord = userChord.replace('maj9', 'Maj9')
+        userChord = userChord.replace('maj13', 'Maj13')
         userChord = userChord.replace('Δ', 'Maj')
         userChord = userChord.replace('aug', '+')
         userChord = userChord.replace('♭', "b")
@@ -72,11 +76,11 @@ class Beestar(callbacks.Plugin):
         except KeyError:
             irc.reply('Error 48a3e5: Invalid or unsupported chord')
             sys.exit()
+
         strings = chart.replace(',', '|')
-        chordName = userChord
         strings = "\x0303 🎸 |" + strings + "|"
-        chordName = "\x0308" + chordName
-                
+        chordName = userChord
+        chordName = "\x0308" + chordName                
         output = chordName + strings
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
