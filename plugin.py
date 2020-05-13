@@ -52,7 +52,11 @@ class BeestChord(callbacks.Plugin):
 number of maximum <voicings>. (Slash chords \
         and omits are currently unsupported.)
         """
-        
+
+        if vo == 0:
+            irc.reply('Error 0xaf74:0b7e:a990:cfe7 -- Silly user requested zero output')
+            sys.exit()
+
         chordJSON = open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__))))
         chordLib=json.load(chordJSON)
        
@@ -72,27 +76,23 @@ number of maximum <voicings>. (Slash chords \
         userChord = userChord.replace('Aug', 'aug')
         userChord = userChord.replace('♭', "b")
         userChord = userChord.replace('♯', '#')
-        try:
-            chart = (chordLib["EADGBE"][userChord][0]["p"])
-        except KeyError:
-            irc.reply('Error 0x3d04:f75c:9b48:a3e5 -- Invalid or unsupported chord')
-            sys.exit()
-        chart = chart.replace(',', '|')
-        chart = "\x0303|" + chart + "|"       
-        
-        if vo is not None:    
-            if vo > 0:
-                for voice in range(1, vo):
-                    try:
-                        newChart = (chordLib["EADGBE"][userChord][voice]["p"])
-                    except IndexError:
-                        break
-                    newChart = newChart.replace(',', '|')
-                    chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
-        
-        chartList = " 🎸  " + chart
+      
+        chart = " 🎸"
+        if vo is None:
+            vo = 3
+        for voiceIndex in range(0, vo):
+            try:
+                newChart = (chordLib["EADGBE"][userChord][voiceIndex]["p"])
+            except KeyError:
+                irc.reply('Error 0x3d04:f75c:9b48:a3e5 -- Invalid or unsupported chord')
+                sys.exit()
+            except IndexError:
+                break
+            chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
+
+        chart = chart.replace(',', '|') + " \x0308•\x0303"
         chordName = "\x0308" + userChord
-        output = chordName + chartList
+        output = chordName + chart
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
 
