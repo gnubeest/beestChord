@@ -46,24 +46,25 @@ class BeestChord(callbacks.Plugin):
     """guitar chord finder"""
     threaded = True
 
-    def chord(self, irc, msg, args, ch, vo):
+
+    def chord(self, irc, msg, args, chord_input, vo):
         """[<chord> <voicings>]
-        Displays EADGBE guitar fingerings from a <chord> in an optional
-number of maximum <voicings>. (Slash chords \
-        and omits are currently unsupported.)
+        Displays EADGBE guitar fingerings from a <chord> in an optional \
+        number of maximum <voicings>. (Slash chords and omits are currently \
+        unsupported.)
         """
+
+        # db stolen from https://gist.github.com/gschoppe/9e48f9d1a9bcb72651c2e318bf45522b
+        chord_lib = \
+        json.load(open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__)))))
 
         # silly user asks for nothing
         if vo == 0:
             irc.reply('error 03: Success')
             sys.exit()
 
-        # db stolen from https://gist.github.com/gschoppe/9e48f9d1a9bcb72651c2e318bf45522b
-        chordJSON = open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__))))
-        chordLib=json.load(chordJSON)
-       
         # yes this should be an array/list instead
-        userChord = ch
+        userChord = chord_input
         userChord = userChord.capitalize()
         userChord = userChord.replace('minor', 'm')
         userChord = userChord.replace('Minor', 'm')
@@ -76,30 +77,32 @@ number of maximum <voicings>. (Slash chords \
         userChord = userChord.replace('maj9', 'Maj9')
         userChord = userChord.replace('maj13', 'Maj13')
         userChord = userChord.replace('Aug', 'aug')
-        userChord = userChord.replace('Δ', 'Maj') # doesn't work, thx python
+        userChord = userChord.replace('δ', 'Maj')
+        userChord = userChord.replace('Δ', 'Maj') # yes, it's superfluous
         userChord = userChord.replace('♭', "b")
         userChord = userChord.replace('♯', '#')
-      
+
         chart = " 🎸"
-        bullet = " \x0303•\x0f "
-        slinky = "\x0314|\x0f"
-        
+        bullet = " \x033•\x0f "
+        slinky = "\x036|\x0f"
+
         if vo is None:
             vo = 3 # default voicings
         # someone explain to me how this works without an adjusted index
         for voiceIndex in range(0, vo):
             try:
-                newChart = (chordLib["EADGBE"][userChord][voiceIndex]["p"])
+                newChart = (chord_lib["EADGBE"][userChord][voiceIndex]["p"])
             except KeyError: # what is this chord I don't even
-                irc.reply('error 02: Invalid or unsupported chord')
+                irc.reply('error 02: Invalid or unsupported chord: ' + \
+                userChord)
                 sys.exit()
             except IndexError: # ran out of voicings
                 break
             # unpretty code makes pretty charts
-            chart = chart + bullet + newChart + slinky     
+            chart = chart + bullet + newChart + slinky
         chart = chart.replace(',', slinky) + bullet
-        
-        output = "\x0303" + userChord + chart
+
+        output = userChord + "\x0303" + chart
         # bemolle all teh things
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
