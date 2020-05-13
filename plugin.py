@@ -82,7 +82,7 @@ number of maximum <voicings>. (Slash chords \
       
         chart = " 🎸"
         bullet = " \x0303•\x0f "
-        slinky = "\x0315|\x0f"
+        slinky = "\x0314|\x0f"
         
         if vo is None:
             vo = 3 # default voicings
