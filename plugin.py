@@ -81,6 +81,9 @@ number of maximum <voicings>. (Slash chords \
         userChord = userChord.replace('♯', '#')
       
         chart = " 🎸"
+        bullet = " \x0303•\x0f "
+        slinky = "\x0315|\x0f"
+        
         if vo is None:
             vo = 3 # default voicings
         # someone explain to me how this works without an adjusted index
@@ -93,10 +96,10 @@ number of maximum <voicings>. (Slash chords \
             except IndexError: # ran out of voicings
                 break
             # unpretty code makes pretty charts
-            chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
-        chart = chart.replace(',', '|') + " \x0308•\x0303"
+            chart = chart + bullet + newChart + slinky     
+        chart = chart.replace(',', slinky) + bullet
         
-        output = "\x0308" + userChord + chart
+        output = "\x0303" + userChord + chart
         # bemolle all teh things
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
