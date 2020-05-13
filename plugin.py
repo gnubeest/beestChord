@@ -53,13 +53,16 @@ number of maximum <voicings>. (Slash chords \
         and omits are currently unsupported.)
         """
 
+        # why would you even silly user
         if vo == 0:
             irc.reply('Error 0xaf74:0b7e:a990:cfe7 -- Silly user requested zero output')
             sys.exit()
 
+        # load database stolen from https://gist.github.com/gschoppe/9e48f9d1a9bcb72651c2e318bf45522b
         chordJSON = open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__))))
         chordLib=json.load(chordJSON)
        
+        # yes this should be an array/list instead
         userChord = ch
         userChord = userChord.capitalize()
         userChord = userChord.replace('minor', 'm')
@@ -72,31 +75,31 @@ number of maximum <voicings>. (Slash chords \
         userChord = userChord.replace('maj7', 'Maj7')
         userChord = userChord.replace('maj9', 'Maj9')
         userChord = userChord.replace('maj13', 'Maj13')
-        userChord = userChord.replace('Δ', 'Maj')
         userChord = userChord.replace('Aug', 'aug')
+        # why is Unicode input being so janky, these should work but don't
+        userChord = userChord.replace('Δ', 'Maj')
         userChord = userChord.replace('♭', "b")
         userChord = userChord.replace('♯', '#')
       
         chart = " 🎸"
         if vo is None:
-            vo = 3
+            vo = 3 # default voicings
         for voiceIndex in range(0, vo):
             try:
                 newChart = (chordLib["EADGBE"][userChord][voiceIndex]["p"])
-            except KeyError:
+            except KeyError: # what is this chord I don't even
                 irc.reply('Error 0x3d04:f75c:9b48:a3e5 -- Invalid or unsupported chord')
                 sys.exit()
-            except IndexError:
+            except IndexError: # ran out of voicings
                 break
             chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
-
         chart = chart.replace(',', '|') + " \x0308•\x0303"
-        chordName = "\x0308" + userChord
-        output = chordName + chart
+        
+        output = "\x0308" + userChord + chart
         output = output.replace('b', "♭")
         output = output.replace('#', '♯')
-
         irc.reply(output)
+
     chord = wrap(chord, ['somethingWithoutSpaces', optional('int')])
 
 Class = BeestChord
