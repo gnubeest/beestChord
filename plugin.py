@@ -46,17 +46,17 @@ class BeestChord(callbacks.Plugin):
     """guitar chord finder"""
     threaded = True
 
-    def chord(self, irc, msg, args, input):
-        """[<chordname>]
-        Displays EADGBE guitar fingerings from <chordname>. (Slash chords \
+    def chord(self, irc, msg, args, ch, vo):
+        """[<chord> <voicings>]
+        Displays EADGBE guitar fingerings from a <chord> in an optional
+number of maximum <voicings>. (Slash chords \
         and omits are currently unsupported.)
         """
         
         chordJSON = open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__))))
         chordLib=json.load(chordJSON)
        
-        userChord = input
-        userChord = userChord.replace(' ', '')
+        userChord = ch
         userChord = userChord.capitalize()
         userChord = userChord.replace('minor', 'm')
         userChord = userChord.replace('Minor', 'm')
@@ -79,14 +79,16 @@ class BeestChord(callbacks.Plugin):
             sys.exit()
         chart = chart.replace(',', '|')
         chart = "\x0303|" + chart + "|"       
- 
-        for voice in range(1, 4):
-            try:
-                newChart = (chordLib["EADGBE"][userChord][voice]["p"])
-            except IndexError:
-                break
-            newChart = newChart.replace(',', '|')
-            chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
+        
+        if vo is not None:    
+            if vo > 0:
+                for voice in range(1, vo):
+                    try:
+                        newChart = (chordLib["EADGBE"][userChord][voice]["p"])
+                    except IndexError:
+                        break
+                    newChart = newChart.replace(',', '|')
+                    chart = chart + " \x0308•\x0303 " + "|" + newChart + "|"       
         
         chartList = " 🎸  " + chart
         chordName = "\x0308" + userChord
@@ -95,7 +97,7 @@ class BeestChord(callbacks.Plugin):
         output = output.replace('#', '♯')
 
         irc.reply(output)
-    chord = wrap(chord, ['text'])
+    chord = wrap(chord, ['somethingWithoutSpaces', optional('int')])
 
 Class = BeestChord
 
