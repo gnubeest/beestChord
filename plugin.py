@@ -47,7 +47,7 @@ class BeestChord(callbacks.Plugin):
     threaded = True
 
 
-    def chord(self, irc, msg, args, chord_input, vo):
+    def chord(self, irc, msg, args, chord_input, voice_no):
         """[<chord> <voicings>]
         Displays EADGBE guitar fingerings from a <chord> in an optional \
         number of maximum <voicings>. (Slash chords and omits are currently \
@@ -59,54 +59,54 @@ class BeestChord(callbacks.Plugin):
         json.load(open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__)))))
 
         # silly user asks for nothing
-        if vo == 0:
+        if voice_no == 0:
             irc.reply('error 03: Success')
             sys.exit()
 
         # yes this should be an array/list instead
-        userChord = chord_input
-        userChord = userChord.capitalize()
-        userChord = userChord.replace('minor', 'm')
-        userChord = userChord.replace('Minor', 'm')
-        userChord = userChord.replace('min', 'm')
-        userChord = userChord.replace('Min', 'm')
-        userChord = userChord.replace('-', 'm')
-        userChord = userChord.replace('major', 'Maj')
-        userChord = userChord.replace('Major', 'Maj')
-        userChord = userChord.replace('maj7', 'Maj7')
-        userChord = userChord.replace('maj9', 'Maj9')
-        userChord = userChord.replace('maj13', 'Maj13')
-        userChord = userChord.replace('Aug', 'aug')
-        userChord = userChord.replace('δ', 'Maj')
-        userChord = userChord.replace('Δ', 'Maj') # yes, it's superfluous
-        userChord = userChord.replace('♭', "b")
-        userChord = userChord.replace('♯', '#')
+        chord_output = chord_input
+        chord_output = chord_output.capitalize()
+        chord_output = chord_output.replace('minor', 'm')
+        chord_output = chord_output.replace('Minor', 'm')
+        chord_output = chord_output.replace('min', 'm')
+        chord_output = chord_output.replace('Min', 'm')
+        chord_output = chord_output.replace('-', 'm')
+        chord_output = chord_output.replace('major', 'Maj')
+        chord_output = chord_output.replace('Major', 'Maj')
+        chord_output = chord_output.replace('maj7', 'Maj7')
+        chord_output = chord_output.replace('maj9', 'Maj9')
+        chord_output = chord_output.replace('maj13', 'Maj13')
+        chord_output = chord_output.replace('Aug', 'aug')
+        chord_output = chord_output.replace('δ', 'Maj')
+        chord_output = chord_output.replace('Δ', 'Maj') # yes, it's superfluous
+        chord_output = chord_output.replace('♭', "b")
+        chord_output = chord_output.replace('♯', '#')
 
-        chart = " 🎸"
+        chart_base = " 🎸"
         bullet = " \x033•\x0f "
         slinky = "\x036|\x0f"
 
-        if vo is None:
-            vo = 3 # default voicings
+        if voice_no is None:
+            voice_no = 3 # default voicings
         # someone explain to me how this works without an adjusted index
-        for voiceIndex in range(0, vo):
+        for voiceIndex in range(0, voice_no):
             try:
-                newChart = (chord_lib["EADGBE"][userChord][voiceIndex]["p"])
+                new_chart = (chord_lib["EADGBE"][chord_output][voiceIndex]["p"])
             except KeyError: # what is this chord I don't even
                 irc.reply('error 02: Invalid or unsupported chord: ' + \
-                userChord)
+                chord_input)
                 sys.exit()
             except IndexError: # ran out of voicings
                 break
             # unpretty code makes pretty charts
-            chart = chart + bullet + newChart + slinky
-        chart = chart.replace(',', slinky) + bullet
+            chart_base = chart_base + bullet + new_chart + slinky
+        chart_base = chart_base.replace(',', slinky) + bullet
 
-        output = userChord + "\x0303" + chart
+        chord_print = chord_output + "\x0303" + chart_base
         # bemolle all teh things
-        output = output.replace('b', "♭")
-        output = output.replace('#', '♯')
-        irc.reply(output)
+        chord_print = chord_print.replace('b', "♭")
+        chord_print = chord_print.replace('#', '♯')
+        irc.reply(chord_print)
 
     chord = wrap(chord, ['somethingWithoutSpaces', optional('int')])
 
