@@ -89,9 +89,9 @@ class BeestChord(callbacks.Plugin):
         if voice_no is None:
             voice_no = 3 # default voicings
         # someone explain to me how this works without an adjusted index
-        for voiceIndex in range(0, voice_no):
+        for voice_index in range(0, voice_no):
             try:
-                new_chart = (chord_lib["EADGBE"][chord_output][voiceIndex]["p"])
+                new_chart = (chord_lib["EADGBE"][chord_output][voice_index]["p"])
             except KeyError: # what is this chord I don't even
                 irc.reply('error 02: Invalid or unsupported chord: ' + \
                 chord_input)
