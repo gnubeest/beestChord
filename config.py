@@ -46,8 +46,12 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('BeestChord', True)
 
-
 BeestChord = conf.registerPlugin('BeestChord')
+conf.registerGlobalValue(BeestChord, 'defaultVoicings',
+    registry.PositiveInteger(3, """Default number of voicings when no argument
+                                     is given."""))
+
+
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(BeestChord, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))

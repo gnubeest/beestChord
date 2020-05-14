@@ -83,11 +83,11 @@ class BeestChord(callbacks.Plugin):
         chord_output = chord_output.replace('♯', '#')
 
         chart_base = " 🎸"
-        bullet = " \x033•\x0f "
+        bullet = " \x039•\x0f "
         slinky = "\x036|\x0f"
 
         if voice_no is None:
-            voice_no = 3 # default voicings
+            voice_no = self.registryValue("defaultVoicings") # read from config
         # someone explain to me how this works without an adjusted index
         for voice_index in range(0, voice_no):
             try:
@@ -102,7 +102,7 @@ class BeestChord(callbacks.Plugin):
             chart_base = chart_base + bullet + new_chart + slinky
         chart_base = chart_base.replace(',', slinky) + bullet
 
-        chord_print = chord_output + "\x0303" + chart_base
+        chord_print = "\x036" + chord_output + chart_base
         # bemolle all teh things
         chord_print = chord_print.replace('b', "♭")
         chord_print = chord_print.replace('#', '♯')
