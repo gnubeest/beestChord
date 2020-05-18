@@ -46,64 +46,93 @@ class BeestChord(callbacks.Plugin):
     """guitar chord finder"""
     threaded = True
 
-
     def chord(self, irc, msg, args, chord_input, voice_no):
         """[<chord> <voicings>]
         Displays EADGBE guitar fingerings from a <chord> in an optional \
-        number of maximum <voicings>. (Slash chords and omits are currently \
-        unsupported.)
-        """
+        number of maximum <voicings>."""
 
-        # db stolen from https://gist.github.com/gschoppe/9e48f9d1a9bcb72651c2e318bf45522b
+# open json library
         chord_lib = \
-        json.load(open("{0}/chordlibrary.json".format(os.path.dirname(os.path.abspath(__file__)))))
+        json.load(open("{0}/guitar.json".format(os.path.dirname(os.path.abspath(__file__)))))
 
-        # silly user asks for nothing
+# silly user asks for nothing
         if voice_no == 0:
             irc.reply('error 03: Success')
             sys.exit()
 
-        # yes this should be an array/list instead
-        chord_output = chord_input
-        chord_output = chord_output.capitalize()
-        chord_output = chord_output.replace('minor', 'm')
-        chord_output = chord_output.replace('Minor', 'm')
-        chord_output = chord_output.replace('min', 'm')
-        chord_output = chord_output.replace('Min', 'm')
+# match weird user input with weird database
+        chord_output = chord_input.capitalize()
+        #chord_output = chord_output.replace('minor', 'm')
+        #chord_output = chord_output.replace('min', 'm')
         chord_output = chord_output.replace('-', 'm')
-        chord_output = chord_output.replace('major', 'Maj')
-        chord_output = chord_output.replace('Major', 'Maj')
-        chord_output = chord_output.replace('maj7', 'Maj7')
-        chord_output = chord_output.replace('maj9', 'Maj9')
-        chord_output = chord_output.replace('maj13', 'Maj13')
-        chord_output = chord_output.replace('Aug', 'aug')
-        chord_output = chord_output.replace('δ', 'Maj')
-        chord_output = chord_output.replace('Δ', 'Maj') # yes, it's superfluous
+        #chord_output = chord_output.replace('major', 'maj')
+        chord_output = chord_output.replace('δ', 'maj')
         chord_output = chord_output.replace('♭', "b")
         chord_output = chord_output.replace('♯', '#')
+        try:
+            if chord_output[1] == "#" or chord_output[1] == "b":
+                if chord_output[0:2] == "Db" or chord_output[0:2] == "C#":
+                    chord_key = "Csharp"
+                elif chord_output[0:2] == "D#" or chord_output[0:2] == "Eb":
+                    chord_key = "Eb"
+                elif chord_output[0:2] == "Gb" or chord_output[0:2] == "F#":
+                    chord_key = "Fsharp"
+                elif chord_output[0:2] == "G#" or chord_output[0:2] == "Ab":
+                    chord_key = "Ab"
+                elif chord_output[0:2] == "A#" or chord_output[0:2] == "Bb":
+                    chord_key = "Bb"
+                chord_suffix = chord_output[2:]
+            else:
+                chord_key = chord_output[0]
+                chord_suffix = chord_output[1:]
+        except IndexError:
+            chord_key = chord_output[0]
+            chord_suffix = chord_output[1:]
+        if chord_suffix == "" or chord_suffix == "maj":
+            chord_suffix = "major"
+        if chord_suffix == "m" or chord_suffix == "min":
+            chord_suffix = "minor"
 
+# search for matching suffix
+        chord_lookup = chord_key + chord_suffix
+        for suffix_index in range(0,100):
+            chart = (chord_lib['chords'][chord_key][suffix_index])
+            if (chart['suffix']) == chord_suffix:
+                chord_db = (chart['positions'])
+                break
+
+# build fingerings
         chart_base = " 🎸"
         bullet = " \x039•\x0f "
         slinky = "\x036|\x0f"
-
         if voice_no is None:
             voice_no = self.registryValue("defaultVoicings") # read from config
-        # someone explain to me how this works without an adjusted index
         for voice_index in range(0, voice_no):
             try:
-                new_chart = (chord_lib["EADGBE"][chord_output][voice_index]["p"])
-            except KeyError: # what is this chord I don't even
-                irc.reply('error 02: Invalid or unsupported chord: ' + \
-                chord_input)
-                sys.exit()
-            except IndexError: # ran out of voicings
+                string_list = []
+                voice_db = (chord_db[voice_index]['frets'])
+                for string in range(0, 6):
+                    if voice_db[string] == -1:
+                        string_chr = "X"
+                    else:
+                        string_adj = (voice_db[string]) + ((
+                                    chord_db[voice_index]['baseFret']) - 1)
+                        string_chr = str(string_adj)
+                    string_list.insert(string, string_chr)
+                E_st = (string_list[0])
+                A_st = (string_list[1])
+                D_st = (string_list[2])
+                G_st = (string_list[3])
+                B_st = (string_list[4])
+                EE_st = (string_list[5])
+                chart_base = (chart_base + bullet + E_st + slinky + A_st +
+                                slinky + D_st + slinky + G_st + slinky + B_st + 
+                                slinky + EE_st + slinky)
+            except IndexError:
                 break
-            # unpretty code makes pretty charts
-            chart_base = chart_base + bullet + new_chart + slinky
-        chart_base = chart_base.replace(',', slinky) + bullet
 
-        chord_print = "\x036" + chord_output + chart_base
-        # bemolle all teh things
+# build final output
+        chord_print = chord_key + chord_suffix + chart_base
         chord_print = chord_print.replace('b', "♭")
         chord_print = chord_print.replace('#', '♯')
         irc.reply(chord_print)
