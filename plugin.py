@@ -55,15 +55,16 @@ class BeestChord(callbacks.Plugin):
         chord_lib = json.load(open("{0}/guitar.json".format(os.path.dirname(
                                 os.path.abspath(__file__)))))
 
-        # silly user asks for nothing
+        # get snarky when user asks for nothing
         if voice_no == 0:
             irc.reply('error 03: Malicious compliance module returns '\
                         '\"Success\"')
             sys.exit()
 
         # parse and split output to match database
-        chord_output = chord_input.capitalize()
-        chord_output = chord_output.replace('♭', "b")
+        chord_input = chord_input[:1].upper() + chord_input[1:]
+        chord_output = chord_input
+        chord_output = chord_output.replace('♭', "b") # okay bougie user
         chord_output = chord_output.replace('♯', '#')
         try:
             if chord_output[1] == "#" or chord_output[1] == "b":
@@ -84,10 +85,13 @@ class BeestChord(callbacks.Plugin):
         except IndexError: # no suffix at all in input
             chord_key = chord_output[0]
             chord_suffix = chord_output[1:]
-        if chord_suffix in {'','maj','δ'}:
+        # if the entire suffix contains only 'm' 'M',
+        # assume what the user wants, otherwise YOLO
+        if chord_suffix in {'','M','maj','δ','Δ'}:
             chord_suffix = "major"
-        if chord_suffix in {'-','m','min','δ'}:
+        if chord_suffix in {'-','m','min'}:
             chord_suffix = "minor"
+        chord_suffix = chord_suffix.lower()
         chord_suffix = chord_suffix.replace('δ', 'maj')
         chord_suffix = chord_suffix.replace('-', 'm')
 
@@ -105,7 +109,7 @@ class BeestChord(callbacks.Plugin):
             sys.exit()
 
         # build fingerings
-        chart_base = "\x036 🎸"
+        chart_base = " 🎸"
         bullet = " \x039•\x0f "
         slinky = "\x036|\x0f"
         if voice_no is None:
@@ -115,7 +119,7 @@ class BeestChord(callbacks.Plugin):
                 string_list = []
                 voice_db = (chord_db[voice_index]['frets'])
                 for string in range(0, 6):
-                    # '-1' is muted string
+                    # -1 is muted string
                     if voice_db[string] == -1:
                         string_chr = "X"
                     else: # move from base fret in db to distance from nut
@@ -141,7 +145,9 @@ class BeestChord(callbacks.Plugin):
         chord_print = chord_key + chord_suffix + chart_base
         chord_print = chord_print.replace('b', "♭")
         chord_print = chord_print.replace('#', '♯')
-        irc.reply(chord_print)
+        chord_print = chord_print.replace('major', '')
+        chord_print = chord_print.replace('minor', 'm')
+        irc.reply("\x036" + chord_print)
 
     chord = wrap(chord, ['somethingWithoutSpaces', optional('int')])
 
