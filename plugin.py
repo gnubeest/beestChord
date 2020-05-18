@@ -102,8 +102,8 @@ class BeestChord(callbacks.Plugin):
                 break
             # unpretty code makes pretty charts
             chart_base = chart_base + bullet + new_chart + slinky
-            chart_base = chart_base.replace(',', slinky)
-
+ 
+        chart_base = chart_base.replace(',', slinky)
         chord_print = "\x036" + chord_output + chart_base
         # bemolle all teh things
         chord_print = chord_print.replace('b', "♭")
