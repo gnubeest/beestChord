@@ -51,22 +51,18 @@ class BeestChord(callbacks.Plugin):
         Displays EADGBE guitar fingerings from a <chord> in an optional \
         number of maximum <voicings>."""
 
-# open json library
-        chord_lib = \
-        json.load(open("{0}/guitar.json".format(os.path.dirname(os.path.abspath(__file__)))))
+        # open json library
+        chord_lib = json.load(open("{0}/guitar.json".format(os.path.dirname(
+                                os.path.abspath(__file__)))))
 
-# silly user asks for nothing
+        # silly user asks for nothing
         if voice_no == 0:
-            irc.reply('error 03: Success')
+            irc.reply('error 03: Malicious compliance module returns '\
+                        '\"Success\"')
             sys.exit()
 
-# match weird user input with weird database
+        # parse and split output to match database
         chord_output = chord_input.capitalize()
-        #chord_output = chord_output.replace('minor', 'm')
-        #chord_output = chord_output.replace('min', 'm')
-        chord_output = chord_output.replace('-', 'm')
-        #chord_output = chord_output.replace('major', 'maj')
-        chord_output = chord_output.replace('δ', 'maj')
         chord_output = chord_output.replace('♭', "b")
         chord_output = chord_output.replace('♯', '#')
         try:
@@ -82,18 +78,20 @@ class BeestChord(callbacks.Plugin):
                 elif chord_output[0:2] == "A#" or chord_output[0:2] == "Bb":
                     chord_key = "Bb"
                 chord_suffix = chord_output[2:]
-            else:
+            else: # no sharps or flats, rest of input treated as suffix
                 chord_key = chord_output[0]
                 chord_suffix = chord_output[1:]
-        except IndexError:
+        except IndexError: # no suffix at all in input
             chord_key = chord_output[0]
             chord_suffix = chord_output[1:]
-        if chord_suffix == "" or chord_suffix == "maj":
+        if chord_suffix in {'','maj','δ'}:
             chord_suffix = "major"
-        if chord_suffix == "m" or chord_suffix == "min":
+        if chord_suffix in {'-','m','min','δ'}:
             chord_suffix = "minor"
+        chord_suffix = chord_suffix.replace('δ', 'maj')
+        chord_suffix = chord_suffix.replace('-', 'm')
 
-# search for matching suffix
+        # search for matching suffix
         chord_lookup = chord_key + chord_suffix
         try:
             for suffix_index in range(0,100):
@@ -105,8 +103,9 @@ class BeestChord(callbacks.Plugin):
             irc.reply('error 02: Invalid or unsupported chord: ' + \
             chord_input)
             sys.exit()
-# build fingerings
-        chart_base = " 🎸"
+
+        # build fingerings
+        chart_base = "\x036 🎸"
         bullet = " \x039•\x0f "
         slinky = "\x036|\x0f"
         if voice_no is None:
@@ -116,26 +115,29 @@ class BeestChord(callbacks.Plugin):
                 string_list = []
                 voice_db = (chord_db[voice_index]['frets'])
                 for string in range(0, 6):
+                    # '-1' is muted string
                     if voice_db[string] == -1:
                         string_chr = "X"
-                    else:
+                    else: # move from base fret in db to distance from nut
                         string_adj = (voice_db[string]) + ((
                                     chord_db[voice_index]['baseFret']) - 1)
                         string_chr = str(string_adj)
                     string_list.insert(string, string_chr)
+                # loop me later I guess
                 E_st = (string_list[0])
                 A_st = (string_list[1])
                 D_st = (string_list[2])
                 G_st = (string_list[3])
                 B_st = (string_list[4])
                 EE_st = (string_list[5])
+                # new figure is built and added to previous voicings
                 chart_base = (chart_base + bullet + E_st + slinky + A_st +
-                                slinky + D_st + slinky + G_st + slinky + B_st + 
-                                slinky + EE_st + slinky)
+                                slinky + D_st + slinky + G_st + slinky + 
+                                B_st + slinky + EE_st + slinky)
             except IndexError:
                 break
 
-# build final output
+        # build final output
         chord_print = chord_key + chord_suffix + chart_base
         chord_print = chord_print.replace('b', "♭")
         chord_print = chord_print.replace('#', '♯')
