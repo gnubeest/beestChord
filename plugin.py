@@ -95,12 +95,16 @@ class BeestChord(callbacks.Plugin):
 
 # search for matching suffix
         chord_lookup = chord_key + chord_suffix
-        for suffix_index in range(0,100):
-            chart = (chord_lib['chords'][chord_key][suffix_index])
-            if (chart['suffix']) == chord_suffix:
-                chord_db = (chart['positions'])
-                break
-
+        try:
+            for suffix_index in range(0,100):
+                chart = (chord_lib['chords'][chord_key][suffix_index])
+                if (chart['suffix']) == chord_suffix:
+                    chord_db = (chart['positions'])
+                    break
+        except (KeyError, IndexError): # what is this chord I don't even
+            irc.reply('error 02: Invalid or unsupported chord: ' + \
+            chord_input)
+            sys.exit()
 # build fingerings
         chart_base = " 🎸"
         bullet = " \x039•\x0f "
